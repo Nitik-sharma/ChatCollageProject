@@ -93,7 +93,7 @@ function Register() {
           </div>
 
           <div className="text-center mt-4">
-            <Link href={"/"} className=" text-black">
+            <Link href={"/forgot"} className=" text-black">
               Forgot Password?
             </Link>
           </div>
