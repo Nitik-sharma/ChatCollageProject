@@ -1,5 +1,5 @@
 "use client";
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -14,7 +14,21 @@ import { BackgroundGradient } from '../../../components/background-gradient';
 
 function Register() {
 
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+      password:"",
+  })
+  
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     
+  }
+
+  const submitData = (e) => {
+    e.preventDefault();
+    console.log(formData)
+  }
     
   return (
     <BackgroundBeamsWithCollision className={""}>
@@ -40,11 +54,14 @@ function Register() {
               <div>
                 <input
                   id="username"
-                  type="text"
+                type="text"
+                name='name'
                   required
                   autoComplete="off"
                   className=" shadow  appearance-none border rounded w-full py-3 px-4 text-gray-700 focus:outline-none focus:shadow-outline leading-tight "
-                  placeholder="Enter your username ...."
+                placeholder="Enter your username ...."
+                value={formData.name}
+                onChange={handleChange}
                 />
               </div>
 
@@ -61,11 +78,14 @@ function Register() {
               <div>
                 <input
                   id="email"
-                  type="email"
+                type="email"
+                name='email'
                   required
                   autoComplete="off"
                   className=" shadow  appearance-none border rounded w-full py-3 px-4 text-gray-700 focus:outline-none focus:shadow-outline leading-tight "
-                  placeholder="Enter your email ...."
+                placeholder="Enter your email ...."
+                value={formData.email}
+                onChange={handleChange}
                 />
               </div>
 
@@ -82,16 +102,19 @@ function Register() {
               <div>
                 <input
                   id="password"
-                  type="password"
+                type="password"
+                name='password'
                   required
                   autoComplete="off"
                   className=" shadow  appearance-none border rounded w-full py-3 px-4 text-gray-700 focus:outline-none focus:shadow-outline leading-tight "
-                  placeholder="Enter your password ...."
+                placeholder="Enter your password ...."
+                value={formData.password}
+                onChange={handleChange }
                 />
               </div>
 
               <div className=" flex justify-center items-center  m-4">
-                <button className=" bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-500  hover:to-purple-600 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                <button className=" bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-500  hover:to-purple-600 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline w-full" onClick={submitData}>
                   Register
                 </button>
               </div>

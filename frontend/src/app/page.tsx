@@ -18,7 +18,7 @@ export default function Home() {
         </p>
         <div className=" flex justify-center items-center">
           <Link href="/register">
-            <ButtonsCard />
+            <ButtonsCard className={" "} />
             
            
           </Link>
