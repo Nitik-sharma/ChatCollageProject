@@ -17,11 +17,11 @@ export default function Home() {
           You need to Register or Login to continue.
         </p>
         <div className=" flex justify-center items-center">
-          <Link href="/register">
-            <ButtonsCard className={" "} />
+         
+            <ButtonsCard />
             
            
-          </Link>
+         
          
         </div>
       </div>

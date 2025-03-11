@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react'
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEnvelope,faLock,faUser } from '@fortawesome/free-solid-svg-icons';
@@ -11,11 +12,13 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { BackgroundBeamsWithCollision } from '../../../components/background-beams-with-collision';
 import { BackgroundGradient } from '../../../components/background-gradient';
+import axios from 'axios';
+import { json } from 'stream/consumers';
 
 function Register() {
-
+const router = useRouter();
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
       password:"",
   })
@@ -25,8 +28,29 @@ function Register() {
     
   }
 
-  const submitData = (e) => {
+  const submitData =async (e) => {
     e.preventDefault();
+    try {
+      const response = await axios.post(
+        " http://localhost:5000/api/auth/register", formData, {
+          headers: {
+            "Content-Type":"application/json"
+          },
+          
+        }
+      );
+      if (response.status === 201) {
+        alert("Registration sucessfull ! ✅ Redirecting to login ....");
+        router.push("/login")
+        console.log("User Registration ",response.data)
+      }
+    } catch (error) {
+      console.error(
+        "Error registering user:",
+        error.response?.data || error.message
+      );
+      alert(error.response?.data?.message || "Registration failed ❌");
+    }
     console.log(formData)
   }
     
@@ -55,12 +79,12 @@ function Register() {
                 <input
                   id="username"
                 type="text"
-                name='name'
+                name='username'
                   required
                   autoComplete="off"
                   className=" shadow  appearance-none border rounded w-full py-3 px-4 text-gray-700 focus:outline-none focus:shadow-outline leading-tight "
                 placeholder="Enter your username ...."
-                value={formData.name}
+                value={formData.username}
                 onChange={handleChange}
                 />
               </div>

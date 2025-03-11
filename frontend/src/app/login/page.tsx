@@ -1,4 +1,5 @@
-import React from 'react'
+"use client"
+import React, { useState } from 'react'
 import Link from 'next/link';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -11,13 +12,43 @@ import {
  import { faSquareFacebook,faSquareInstagram,faSquareTwitter } from '@fortawesome/free-brands-svg-icons';
 import { BoxesCore } from '../../../components/background-boxes';
 import { BackgroundGradient } from '../../../components/background-gradient';
+import axios from 'axios';
 
 
 
 function Login() {
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const handleData = (e) => {
+    setFormData({...formData ,[e.target.name]:e.target.value})
+  }
+  const submitData = async(e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        " http://localhost:5000/api/auth/login", formData, {
+          headers: {
+            "Content-Type":"application/json"
+           
+          }
+        }
+      );
+      if (response.status === 201) {
+        alert("Login sucessfull ! ✅");
+
+      }
+    } catch (error) {
+       console.error(
+         "Error registering user:",
+         error.response?.data || error.message
+       );
+       alert(error.response?.data?.message || "Registration failed ❌");
+    }
+    console.log(formData)
+  }
   return (
     <div className=" flex justify-center items-center min-h-screen">
-      <BackgroundGradient className={""}>
+      <BackgroundGradient className={""} >
         <div className=" bg-white shadow-md rounded-s-lg  px-8 pt-6 mb-4 w-full max-w-md">
           <h2 className=" text-3xl text-center mb-6  font-bold text-white">
             <span className=" bg-gradient-to-r text-transparent from-blue-500 to-purple-500 bg-clip-text">
@@ -38,10 +69,13 @@ function Login() {
             <div>
               <input
                 id="email"
+                name='email'
                 type="email"
                 autoComplete="off"
                 className=" shadow  appearance-none border rounded w-full py-3 px-4 text-gray-700 focus:outline-none focus:shadow-outline leading-tight "
                 placeholder="Enter your email ...."
+                value={formData.email}
+                onChange={handleData}
               />
             </div>
 
@@ -58,14 +92,18 @@ function Login() {
             <div>
               <input
                 id="password"
+                name='password'
                 type="password"
                 autoComplete="off"
                 className=" shadow  appearance-none border rounded w-full py-3 px-4 text-gray-700 focus:outline-none focus:shadow-outline leading-tight "
                 placeholder="Enter your password ...."
+                value={formData.password}
+                onChange={handleData}
+
               />
             </div>
             <div className=" flex justify-center items-center  m-4">
-              <button className=" bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-500  hover:to-purple-600 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+              <button className=" bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-500  hover:to-purple-600 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline w-full" onClick={submitData}>
                 Login
               </button>
             </div>
