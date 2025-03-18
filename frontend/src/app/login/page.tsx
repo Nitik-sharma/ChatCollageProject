@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link';
 
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faEnvelope,
@@ -14,9 +15,11 @@ import { BoxesCore } from '../../../components/background-boxes';
 import { BackgroundGradient } from '../../../components/background-gradient';
 import axios from 'axios';
 
+import { useRouter } from 'next/navigation';
 
 
 function Login() {
+  const router = useRouter();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const handleData = (e) => {
     setFormData({...formData ,[e.target.name]:e.target.value})
@@ -35,7 +38,7 @@ function Login() {
       );
       if (response.status === 201) {
         alert("Login sucessfull ! ✅");
-
+router.push("/chat")
       }
     } catch (error) {
        console.error(
@@ -155,3 +158,9 @@ function Login() {
 }
 
 export default Login
+
+
+
+
+
+
