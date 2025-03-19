@@ -7,6 +7,7 @@ const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 const crypto = require("crypto");
 
+
 dotenv.config();
 
 const router = express.Router();
@@ -60,7 +61,16 @@ console.log(matchPassword)
         }
 
         // Generate JWT Token
-        const token=jwt.sign({id:user._id },process.env.JWT_SECRET,{expiresIn:"7d"})
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" })
+        
+        // Stroe token in http -only cookie 
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.Node_ENV === "production",
+            sameSite: "None",
+            maxAge:7*24*60*60*1000
+        })
+
         res.status(201).json({ token, user: { id: user._id, username: user.username, email: user.email },message:"Login sucessfully!" });
 
 
@@ -72,6 +82,11 @@ console.log(matchPassword)
 // logout user (Client side remove tocken)
 
 router.post("/logout", async (req, res) => {
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+    })
     res.json({message:"user logged out sucessfully"})
 })
 

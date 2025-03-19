@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import TopBar from './../../../section/TopBar';
 
 function Chat() {
   const [data, setData] = useState(null);
@@ -36,7 +37,10 @@ function Chat() {
     }
   };
 
-  return <div>Chat</div>;
+    return <div>
+      
+        <TopBar/>
+  </div>;
 }
 
 export default Chat;
