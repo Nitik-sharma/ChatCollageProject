@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 dotenv.config();
 
 const app = express();
+
 const port = process.env.PORT || 5001;
 
 // ✅ Connect to MongoDB
@@ -22,13 +23,14 @@ mongoose.connect(process.env.MONGO_URI, {
     console.error("MongoDB connection failed:", error);
 });
 
-// ✅ Middleware
-app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000", // Allow frontend origin
-    credentials: true, // Allow cookies
-}));
+// ✅ Middleware'
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors({
+    origin:  "http://localhost:3000", // Allow frontend origin
+    credentials: true, // Allow cookies
+}));
+
 
 // ✅ Routes
 app.get("/", (req, res) => {

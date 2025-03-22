@@ -1,10 +1,13 @@
 "use client "
 import React from 'react'
+import ProtectedRoute from '../../../components/ProtectedRoute'
 
 function Contect() {
   return (
     <div>
-      Contect
+      <ProtectedRoute>
+        <h1>Contect</h1>
+    </ProtectedRoute>
     </div>
   )
 }

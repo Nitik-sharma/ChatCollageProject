@@ -9,7 +9,7 @@ import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import { BackgroundLines } from "../../../components/background-lines";
 function page() {
   return (
-    <BackgroundLines className={" "}>
+    <BackgroundBeamsWithCollision   className={""}>
       <div className=" flex items-center justify-center min-h-screen">
         <div className=" bg-white shadow-md rounded px-8 pt-6 mb-4 w-full max-w-md">
           <h2 className=" text-3xl text-center mb-6 font-bold text-white">

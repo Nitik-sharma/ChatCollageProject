@@ -21,9 +21,10 @@ function TopBar() {
          "http://localhost:5000/api/auth/logout",
          {},
          { withCredentials: true }
-       );
+      );
+      localStorage.removeItem("token")
        alert("Logout sucessfully ");
-       router.push("/login");
+       router.push("/");
     } catch (error) {
         console.error("Logout failed", error.response?.data || error.message);
     }
@@ -56,7 +57,9 @@ function TopBar() {
           Contect
         </Link>
 
-        <FontAwesomeIcon icon={faRightFromBracket} size={ "3x"} color='gray' id='logout' className=' cursor-pointer hover: text-yellow-200' onClick={handleLogout}/>
+        <FontAwesomeIcon icon={faRightFromBracket} size={"3x"} color='gray' id='logout' className=' cursor-pointer hover: text-yellow-200' onClick={handleLogout} />
+        
+        
       </div>
     </div>
   );

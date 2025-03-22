@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import TopBar from './../../../section/TopBar';
+import ProtectedRoute from "../../../components/ProtectedRoute";
 
 function Chat() {
   const [data, setData] = useState(null);
@@ -37,10 +38,13 @@ function Chat() {
     }
   };
 
-    return <div>
-      
-        <TopBar/>
-  </div>;
+    return (
+      <div>
+        <ProtectedRoute>
+          <TopBar />
+        </ProtectedRoute>
+      </div>
+    );
 }
 
 export default Chat;

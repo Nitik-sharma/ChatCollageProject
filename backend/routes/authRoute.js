@@ -67,7 +67,7 @@ console.log(matchPassword)
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.Node_ENV === "production",
-            sameSite: "None",
+            sameSite:"Lax",
             maxAge:7*24*60*60*1000
         })
 
@@ -92,8 +92,20 @@ router.post("/logout", async (req, res) => {
 
 
 
-router.get("/profile", authMiddleware, (req, res) => {
-  res.json({ message: "Welcome to your profile", user: req.user });
+router.get("/profile", authMiddleware, async(req, res) => {
+    res.json({ message: "Welcome to your profile", user: req.user });
+    try {
+        const user = await User.findById(req.user.id).select("-password");
+
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Server error " });
+    }
+    
 });
 
 
