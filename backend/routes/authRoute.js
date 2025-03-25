@@ -6,6 +6,7 @@ const authMiddleware = require("../middleware/middlewareAuth")
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 const crypto = require("crypto");
+const multer = require("multer");
 
 
 dotenv.config();
@@ -92,21 +93,18 @@ router.post("/logout", async (req, res) => {
 
 
 
-router.get("/profile", authMiddleware, async(req, res) => {
-    res.json({ message: "Welcome to your profile", user: req.user });
+router.get("/profile", authMiddleware, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select("-password");
 
-        if (!user) {
-            res.status(404).json({ message: "User not found" });
+        if (!user) return res.status(404).json({ message: "User not found" });
 
-        }
         res.status(200).json(user);
     } catch (error) {
-        res.status(500).json({ message: "Server error " });
+        res.status(500).json({ message: "Server error" });
     }
-    
 });
+
 
 
 
@@ -190,4 +188,6 @@ router.post("/reset-password/:token", async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 });
+
+
 module.exports = router;

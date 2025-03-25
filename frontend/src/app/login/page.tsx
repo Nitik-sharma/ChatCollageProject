@@ -38,6 +38,7 @@ function Login() {
       if (response.status === 201) {
         
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data));
         alert("Login sucessfull ! ✅");
         router.push("/chat");
       }

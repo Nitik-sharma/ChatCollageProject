@@ -11,6 +11,7 @@ import { usePathname,useRouter } from "next/navigation";
 import axios from 'axios';
 
 
+
 function TopBar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -24,21 +25,30 @@ function TopBar() {
       );
       localStorage.removeItem("token")
        alert("Logout sucessfully ");
-       router.push("/");
+      router.push("/");
+      
     } catch (error) {
         console.error("Logout failed", error.response?.data || error.message);
     }
+
   
   }
+
+  
   return (
     <div className=" topbar flex  justify-between">
-      <Link href={"/chat"}>
-        <FontAwesomeIcon
-          icon={faRocketchat}
-          size={"3x"}
-          className="w-12 text-amber-700 hover:text-amber-600"
-        />
-      </Link>
+      <div className=" flex items-center gap-1.5">
+        <Link href={"/chat"}>
+          <FontAwesomeIcon
+            icon={faRocketchat}
+            size={"3x"}
+            className="w-12 text-amber-700 hover:text-amber-600"
+          />
+        </Link>
+        <h1 className=" font-bold  text-3xl bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400  rounded p-1 ">
+          Chat App
+        </h1>
+      </div>
       <div className=" menu flex gap-6 items-center">
         <Link
           href="/chat"
@@ -51,15 +61,21 @@ function TopBar() {
         <Link
           href={"/contect"}
           className={`${
-            pathname === "/chat" ? "text-red-500" : ""
+            pathname === "/contect" ? "text-red-500" : ""
           }  text-xl font-bold`}
         >
           Contect
         </Link>
 
-        <FontAwesomeIcon icon={faRightFromBracket} size={"3x"} color='gray' id='logout' className=' cursor-pointer hover: text-yellow-200' onClick={handleLogout} />
-        
-        
+        <FontAwesomeIcon
+          icon={faRightFromBracket}
+          size={"3x"}
+          color="gray"
+          id="logout"
+          className=" cursor-pointer hover: text-yellow-200"
+          onClick={handleLogout}
+        />
+        <img src="/assests/profile.png" alt="" width="50" height="50" />
       </div>
     </div>
   );

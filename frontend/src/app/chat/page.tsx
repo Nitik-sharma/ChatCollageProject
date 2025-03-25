@@ -3,45 +3,51 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import TopBar from './../../../section/TopBar';
 import ProtectedRoute from "../../../components/ProtectedRoute";
+import { fetchUserData } from "../../../utils/api";
 
 function Chat() {
-  const [data, setData] = useState(null);
 
-  // useEffect(() => {
-  // if (typeof window !== "undefined") {
-  // const storeUser = localStorage.getItem("user");
-
-  // if (storeUser) {
-  // const parseData = JSON.parse(storeUser);
-  // setData(parseData);
-  // console.log("Login user data:",parseData)
-  // } else {
-  // console.log("No user ")
-  // }
-  // }
-  // }, [])
-
-  const fetchData = async (token) => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/user/user", {
-        headers: {
-          Authorization: token,
-        },
-      });
-      setData(response.data);
-      console.log("Fetch user data", response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching user data:",
-        error.response?.data || error.message
-      );
+  const getToken = () => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("token");
     }
-  };
+    return null;
+  }
+  const [data, setData] = useState(null);
+  const token = getToken();
+  console.log("token", token);
+
+  
+
+  useEffect(() => {
+    const storeData = localStorage.getItem("user");
+
+    if (storeData) {
+      setData(JSON.parse(storeData));
+    } else {
+      fetchUserData().then((userData) => {
+        if (userData) {
+          setData(userData);
+          localStorage.setItem("user", JSON.stringify(userData));
+        }
+      })
+    }
+  },[])
+  
+
+ console.log("Data-->",data)
 
     return (
       <div>
         <ProtectedRoute>
           <TopBar />
+          <div>
+            {data ? (
+              <h2>Welcome, {data.user.username}</h2>
+            ) : (
+              <p>Loading user data...</p>
+            )}
+          </div>
         </ProtectedRoute>
       </div>
     );
