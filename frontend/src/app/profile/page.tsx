@@ -40,9 +40,9 @@ function Profile() {
     <div>
       <ProtectedRoute>
         <TopBar />
-        {/* <div>
-          <div>{user ? `Welcome ${user.name}` : "Loading..."}</div>
-        </div> */}
+        <div>
+          <div>{data ? `Welcome ${data.user.username}` : "Loading..."}</div>
+        </div>
       </ProtectedRoute>
     </div>
   );

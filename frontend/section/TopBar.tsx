@@ -23,7 +23,8 @@ function TopBar() {
          {},
          { withCredentials: true }
       );
-      localStorage.removeItem("token")
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
        alert("Logout sucessfully ");
       router.push("/");
       
@@ -34,7 +35,7 @@ function TopBar() {
   
   }
 
-  
+
   return (
     <div className=" topbar flex  justify-between">
       <div className=" flex items-center gap-1.5">
