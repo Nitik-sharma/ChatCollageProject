@@ -190,4 +190,53 @@ router.post("/reset-password/:token", async (req, res) => {
 });
 
 
+// setUp Strogae for fileUpload 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/") // save file in the upload folde 
+        
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`) //unique file name
+        
+        
+    }
+})
+const upload = multer({ storage });
+
+router.put("/update", upload.single("profilePic"), authMiddleware, async (req, res) => {
+
+    
+     console.log("User making update request:", req.user); // Debugging
+     
+    if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized user" });
+    }
+    try {
+        console.log("Request Body : ", req.body);
+        console.log("File: ", req.file);
+        const { username } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            res.status(404).json({ message: "user not found " });
+        }
+
+        if (username) user.username = username;
+
+        if (req.file) {
+            user.profilePic = `/uploads/${req.file.filename}`;
+            console.log("Upadte Profile :", user.profilePic);
+        }; //store path here
+
+        await user.save();
+        res.json({ 
+    message: "Profile picture updated successfully", 
+    user 
+});
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+})
+
 module.exports = router;

@@ -4,6 +4,32 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const authRoute = require("./routes/authRoute");
 const cookieParser = require("cookie-parser");
+const fs = require("fs");
+const multer = require("multer");
+
+
+
+// Ensure file exist 
+const uploadDir = "uploads";
+
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir,{recursive:true})
+};
+
+// SetUp multer
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`)
+    }
+
+});
+
+const uplaod=multer({storage})
+
 
 
 dotenv.config();
@@ -40,7 +66,14 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoute);
 
+
+
+
+
 // ✅ Start Server
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+
+
