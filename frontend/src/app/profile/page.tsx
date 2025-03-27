@@ -65,7 +65,13 @@ function Profile() {
       setData(userData);
       setUsername(userData?.username || "");
       if (userData.profilePic) {
-        setPreviewImage(`http://localhost:5000/uploads/${userData.profilePic}`);
+        /**
+         * watch the localstorage.user object
+         * u will see the url of profile pic is something like 
+         * this /uploads means there was no need to put
+         * /uploads/ in here, this would give u 404 for obvious reasons.
+         */
+        setPreviewImage(`http://localhost:5000${userData.profilePic}`);
       }
 
     } else {
