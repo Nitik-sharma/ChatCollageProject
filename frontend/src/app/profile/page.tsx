@@ -1,63 +1,49 @@
-"use client"
-import React, {  useEffect, useState } from 'react'
-import TopBar from '../../../section/TopBar'
-import ProtectedRoute from '../../../components/ProtectedRoute'
-import axios from 'axios'
-import { fetchUserData } from '../../../utils/api'
-
+"use client";
+import React, { useEffect, useState } from "react";
+import TopBar from "../../../section/TopBar";
+import ProtectedRoute from "../../../components/ProtectedRoute";
+import axios from "axios";
+import { fetchUserData } from "../../../utils/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import {
-  faUser
-} from "@fortawesome/free-solid-svg-icons";
-
-
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 function Profile() {
   const [username, setUsername] = useState("");
   const [profilePic, setProfilePic] = useState(null);
   const [data, setData] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-  
 
-  
-// handle userInput---->
+  // Handle user input (username update)
   const handleInput = (event) => {
-    setUsername(event.target.value); // Update state properly
+    setUsername(event.target.value);
   };
 
-  // handle image ----->
+  // Handle profile picture selection
   const handleImage = (e) => {
     const file = e.target.files[0];
     if (file) {
       setProfilePic(file);
-      setPreviewImage(URL.createObjectURL(file));
+      setPreviewImage(URL.createObjectURL(file)); // Preview selected image
     }
-   
-  }
+  };
 
-  
-
-  // --->getTOken----->
+  // Get token from local storage
   const getToken = () => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("token");
     }
-    return null; // Return null on server
+    return null;
   };
 
-  
   const token = getToken();
-  console.log("token->", token)
-  
+  console.log("Token ->", token);
+
   if (!token) {
-    alert("No token provided Please log in again");
+    alert("No token provided. Please log in again.");
     return;
   }
 
-
-
-  // Access user Data----->
+  // Fetch user data
   useEffect(() => {
     const storeData = localStorage.getItem("user");
     if (storeData) {
@@ -65,114 +51,77 @@ function Profile() {
       setData(userData);
       setUsername(userData?.username || "");
       if (userData.profilePic) {
-        setPreviewImage(`http://localhost:5000/uploads/${userData.profilePic}`);
+        setPreviewImage(`http://localhost:5000${userData.profilePic}`);
       }
-
     } else {
       fetchUserData().then((userData) => {
         if (userData) {
           setData(userData);
-          setUsername(userData.username || "")
+          setUsername(userData?.username || "");
           if (userData.profilePic) {
-            setPreviewImage(
-              `http://localhost:5000/uploads/${userData.profilePic}`
-            );
+            setPreviewImage(`http://localhost:5000${userData.profilePic}`);
           }
           localStorage.setItem("user", JSON.stringify(userData));
         }
-      })
+      });
     }
-  }, [])
-  console.log("Data-->", data)
-  
-const isTokenExpired = (token) => {
-  try {
-    const [, payload] = token.split(".");
-    const decoded = JSON.parse(atob(payload));
-    return decoded.exp * 1000 < Date.now();
-  } catch (e) {
-    return true;
-  }
-};
+  }, []);
 
-if (isTokenExpired(token)) {
-  console.error("Token expired. Logging out...");
-  alert("Your session has expired. Please log in again.");
-  localStorage.removeItem("token");
-  return;
-}
+  console.log("Data -->", data);
 
+  // Handle profile update (send data to backend)
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    console.log("Updating profile...");
 
-  // handle  update userData---->
- const handleProfileUpdate = async (e) => {
-   e.preventDefault();
-   console.log("Updating profile...");
+    const formData = new FormData();
+    formData.append("username", username);
+    if (profilePic) {
+      formData.append("profilePic", profilePic);
+    }
 
-   const token = localStorage.getItem("token");
+    try {
+      const res = await axios.put(
+        "http://localhost:5000/api/auth/update",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Send token for authentication
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-   if (!token) {
-     console.error("No token found in localStorage.");
-     alert("You need to log in again.");
-     return;
-   }
+      alert("Profile updated successfully!");
+      localStorage.setItem("user", JSON.stringify(res.data.user)); // Update local storage
+      setData(res.data.user); // Update state
 
-   if (isTokenExpired(token)) {
-     console.error("Token expired. Logging out...");
-     alert("Your session has expired. Please log in again.");
-     localStorage.removeItem("token");
-     return;
-   }
-
-   const formData = new FormData();
-   formData.append("username", username);
-
-   if (profilePic) {
-     formData.append("profilePic", profilePic);
-   }
-
-   try {
-     console.log("Sending request with token:", token);
-
-     const res = await axios.put(
-       "http://localhost:5000/api/auth/update",
-       formData,
-       {
-         headers: {
-           "Content-Type": "multipart/form-data",
-           Authorization: `Bearer ${token}`, // 🟢 Add "Bearer "
-         },
-       }
-     );
-
-   
-     localStorage.setItem("user", JSON.stringify(res.data.user));
-     setData(res.data.user);
-   } catch (error) {
-     console.error("Error updating profile:", error.response?.data || error);
-     alert(error.response?.data?.message || "Profile update failed.");
-   }
- };
+      console.log("Updated user:", res.data.user);
+    } catch (error) {
+      console.error("Error updating profile:", error.response?.data || error);
+      alert(error.response?.data?.message || "Profile update failed.");
+    }
+  };
 
   return (
     <div>
       <ProtectedRoute>
-        <div className=" min-h-screen">
+        <div className="min-h-screen">
           <TopBar />
-          <div className=" flex flex-col items-center justify-center  p-6">
-            <h1 className=" text-3xl font-bold mb-4">Edit your Profile </h1>
+          <div className="flex flex-col items-center justify-center p-6">
+            <h1 className="text-3xl font-bold mb-4">Edit your Profile</h1>
             <form
               onSubmit={handleProfileUpdate}
-              action=""
-              className=" bg-white shadow-md rounded px-8 pt-6 mb-5 pb-6 w-full max-w-md"
+              className="bg-white shadow-md rounded px-8 pt-6 mb-5 pb-6 w-full max-w-md"
             >
-              <div className=" flex gap-1 ">
+              <div className="flex gap-1">
                 <input
                   type="text"
                   id="input"
                   placeholder="Enter your username"
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={username} // Controlled input
-                  onChange={handleInput} // Updates state
+                  value={username}
+                  onChange={handleInput}
                 />
                 <FontAwesomeIcon icon={faUser} size={"2x"} color={"gray"} />
               </div>
@@ -204,10 +153,9 @@ if (isTokenExpired(token)) {
               </div>
               <button
                 type="submit"
-                className=" pb-3 py-3  rounded  mt-3 text-center  w-full font-bold hover:bg-teal-700 bg-blue-700"
+                className="pb-3 py-3 rounded mt-3 text-center w-full font-bold hover:bg-teal-700 bg-blue-700"
               >
-                {" "}
-                Save photo
+                Save Profile
               </button>
             </form>
           </div>
@@ -217,4 +165,4 @@ if (isTokenExpired(token)) {
   );
 }
 
-export default Profile
+export default Profile;

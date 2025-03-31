@@ -190,53 +190,51 @@ router.post("/reset-password/:token", async (req, res) => {
 });
 
 
-// setUp Strogae for fileUpload 
+// configure multer for file storage 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/") // save file in the upload folde 
-        
+        cb(null,"uploads/")
+
     },
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`) //unique file name
-        
-        
-    }
+        cb(null,Date.now()+"-"+file.originalname)
+    },
 })
+
 const upload = multer({ storage });
 
-router.put("/update", upload.single("profilePic"), authMiddleware, async (req, res) => {
+// update User profile
 
-    
-     console.log("User making update request:", req.user); // Debugging
-     
+router.put("/update", upload.single("profilePic"), authMiddleware, async (req, res) => {
+    console.log("Recived Token: ", req.header("Authorization"));
     if (!req.user) {
-        return res.status(401).json({ message: "Unauthorized user" });
+        return res.status(401).json({ message: "Unauthorizes user" });
     }
     try {
-        console.log("Request Body : ", req.body);
-        console.log("File: ", req.file);
+        console.log("Request Body", req.body);
+        console.log("Request file ", req.file);
+
         const { username } = req.body;
         const user = await User.findById(req.user.id);
 
         if (!user) {
-            res.status(404).json({ message: "user not found " });
+            return res.status(404).json({ message: "User not found " });
         }
 
         if (username) user.username = username;
-
-        if (req.file) {
-            user.profilePic = `/uploads/${req.file.filename}`;
-            console.log("Upadte Profile :", user.profilePic);
-        }; //store path here
+        if (req.file) user.profilePic = `/uploads/${req.file.filename}`;
 
         await user.save();
-        res.json({ 
-    message: "Profile picture updated successfully", 
-    user 
-});
+
+        res.json({
+            message: "Profile pic Upadte sucessfully !!",
+            user,
+        })
     } catch (error) {
+         console.error("Update Error:", error);
         res.status(500).json({ message: "Server error", error: error.message });
     }
 })
+
 
 module.exports = router;

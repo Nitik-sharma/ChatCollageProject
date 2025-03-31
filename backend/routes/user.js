@@ -1,30 +1,36 @@
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
+const User = require("../userModel/user");
 
 const authMiddleware = (req, res, next) => {
-    try {
-        const authHeader = req.header("Authorization");
-        console.log("Auth Header Received:", authHeader); // Debugging
+  const authHeader = req.headers.authorization;
+  
+  // Extract token from "Bearer <token>"
+  const token = authHeader && authHeader.startsWith("Bearer ") 
+    ? authHeader.split(" ")[1] 
+    : null;
+  
+  console.log("Token received in middleware:", token);
 
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return res.status(401).json({ message: "Access Denied. No token provided." });
-        }
+  // ✅ Check if token is missing
+  if (!token) {
+    return res.status(401).json({ message: "Access Denied. No token provided." });
+  }
 
-        const token = authHeader.split(" ")[1]; // Extract token
-        console.log("Extracted Token:", token); // Debugging
+  try {
+    // ✅ Verify the token
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = verified;
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        console.log("Decoded User Data:", req.user); // Debugging
+    console.log("User verified successfully:", req.user);
+    next();
+  } catch (error) {
+    console.error("Token verification failed:", error.message);
+    
+    // Clear cookie if token is invalid (optional)
+    res.clearCookie("token");
 
-        next();
-    } catch (error) {
-        console.error("JWT Error:", error);
-        if (error.name === "TokenExpiredError") {
-            return res.status(401).json({ message: "Token expired. Please log in again." });
-        }
-        return res.status(401).json({ message: "Invalid token." });
-    }
+    return res.status(400).json({ message: "Invalid or Expired Token" });
+  }
 };
 
 module.exports = authMiddleware;
